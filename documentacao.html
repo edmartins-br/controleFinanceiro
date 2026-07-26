@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia do Extrato — como usar cada funcionalidade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:            #10141A;
+  --surface:       #171D26;
+  --surface-alt:   #1E2631;
+  --border:        #2A333F;
+  --border-soft:   #212a35;
+  --text:          #E9ECF1;
+  --muted:         #8B95A6;
+  --muted-2:       #5E6779;
+
+  --green:         #4ED8A4;
+  --green-soft:    rgba(78, 216, 164, .14);
+  --coral:         #FF7A70;
+  --coral-soft:    rgba(255, 122, 112, .14);
+  --amber:         #EFBB55;
+  --amber-soft:    rgba(239, 187, 85, .14);
+  --blue:          #6FA9E8;
+  --blue-soft:     rgba(111, 169, 232, .14);
+  --purple:        #B98CE8;
+  --purple-soft:   rgba(185, 140, 232, .14);
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body); -webkit-font-smoothing:antialiased;
+  background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, rgba(255,255,255,0.012) 28px);
+}
+::selection{ background:var(--green); color:#0A0F14; }
+a{ color:var(--green); text-decoration:none; }
+a:hover{ text-decoration:underline; }
+code{ font-family:var(--font-mono); background:var(--surface-alt); padding:2px 7px; border-radius:5px; font-size:.92em; color:var(--text); border:1px solid var(--border); }
+
+/* ===== layout ===== */
+#shell{ display:flex; min-height:100vh; max-width:1280px; margin:0 auto; }
+.toc{
+  width:250px; flex-shrink:0; padding:32px 18px; position:sticky; top:0; height:100vh;
+  overflow-y:auto; border-right:1px solid var(--border);
+}
+.toc-brand{ display:flex; align-items:center; gap:10px; margin-bottom:28px; padding:0 6px; }
+.toc-brand .mark{ font-size:22px; color:var(--green); }
+.toc-brand strong{ display:block; font-family:var(--font-display); font-size:17px; }
+.toc-brand small{ color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.8px; }
+.toc nav{ display:flex; flex-direction:column; gap:2px; }
+.toc a{
+  color:var(--muted); font-size:13.5px; font-weight:500; padding:8px 10px; border-radius:8px;
+  display:flex; align-items:center; gap:9px; transition:background .15s,color .15s;
+}
+.toc a:hover{ background:var(--surface-alt); color:var(--text); text-decoration:none; }
+.toc a.active{ background:var(--green-soft); color:var(--green); }
+.toc-ico{ width:16px; text-align:center; opacity:.9; font-size:13px; }
+.toc-footer{ margin-top:24px; padding:14px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); font-size:11.5px; color:var(--muted-2); line-height:1.6; }
+
+.menu-toggle{ display:none; }
+
+main{ flex:1; min-width:0; padding:56px 64px 100px; }
+
+/* ===== hero ===== */
+.hero{ margin-bottom:64px; }
+.hero .eyebrow{ font-family:var(--font-mono); font-size:12.5px; color:var(--green); text-transform:uppercase; letter-spacing:1.2px; margin-bottom:14px; }
+.hero h1{ font-family:var(--font-display); font-size:44px; line-height:1.12; margin:0 0 16px; letter-spacing:-.5px; }
+.hero p{ font-size:16px; color:var(--muted); max-width:640px; line-height:1.6; margin:0 0 22px; }
+.hero .pill-row{ display:flex; gap:10px; flex-wrap:wrap; }
+.pill{ font-size:12px; font-family:var(--font-mono); background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:6px 14px; color:var(--muted); }
+.pill b{ color:var(--text); }
+
+/* ===== sections ===== */
+section{ margin-bottom:72px; scroll-margin-top:24px; }
+.sec-head{ display:flex; align-items:flex-start; gap:16px; margin-bottom:22px; }
+.sec-badge{
+  flex-shrink:0; width:42px; height:42px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center; font-size:19px;
+}
+.sec-head h2{ font-family:var(--font-display); font-size:26px; margin:2px 0 4px; letter-spacing:-.2px; }
+.sec-head .sec-sub{ color:var(--muted); font-size:14px; margin:0; }
+
+.badge-green{ background:var(--green-soft); color:var(--green); }
+.badge-blue{ background:var(--blue-soft); color:var(--blue); }
+.badge-purple{ background:var(--purple-soft); color:var(--purple); }
+.badge-amber{ background:var(--amber-soft); color:var(--amber); }
+.badge-coral{ background:var(--coral-soft); color:var(--coral); }
+
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:22px 26px; margin-bottom:16px;
+}
+.card h3{ font-family:var(--font-display); font-size:16.5px; margin:0 0 10px; }
+.card p{ margin:0 0 10px; line-height:1.65; color:var(--text); font-size:14.5px; }
+.card p:last-child{ margin-bottom:0; }
+.card ul, .card ol{ margin:8px 0 10px; padding-left:20px; line-height:1.7; font-size:14.5px; }
+.card li{ margin-bottom:5px; }
+.card li:last-child{ margin-bottom:0; }
+
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+.callout{
+  border-radius:var(--radius); padding:14px 18px; font-size:13.5px; line-height:1.6; margin:14px 0;
+  border:1px solid transparent;
+}
+.callout-tip{ background:var(--green-soft); border-color:rgba(78,216,164,.3); color:#B9F0DA; }
+.callout-warn{ background:var(--coral-soft); border-color:rgba(255,122,112,.3); color:#FFC6C0; }
+.callout-info{ background:var(--blue-soft); border-color:rgba(111,169,232,.3); color:#CFE3FA; }
+.callout b{ color:inherit; }
+.callout-label{ font-weight:700; text-transform:uppercase; font-size:11px; letter-spacing:.5px; display:block; margin-bottom:4px; }
+
+.kv-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin:14px 0; }
+.kv{ background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+.kv .k{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:4px; }
+.kv .v{ font-size:13.5px; line-height:1.5; }
+.kv .v code{ font-size:.95em; }
+
+.example-box{
+  background:var(--surface-alt); border:1px dashed var(--border); border-radius:var(--radius);
+  padding:14px 18px; font-size:13.5px; margin:12px 0; font-family:var(--font-mono); line-height:1.8;
+}
+.example-box .arrow{ color:var(--green); }
+
+.steps{ list-style:none; margin:14px 0; padding:0; counter-reset: step; }
+.steps li{
+  counter-increment: step; position:relative; padding-left:34px; margin-bottom:12px;
+  font-size:14.5px; line-height:1.6;
+}
+.steps li::before{
+  content: counter(step); position:absolute; left:0; top:-1px;
+  width:22px; height:22px; border-radius:50%; background:var(--surface-alt); border:1px solid var(--border);
+  color:var(--green); font-family:var(--font-mono); font-size:11.5px; font-weight:600;
+  display:flex; align-items:center; justify-content:center;
+}
+
+table.doc-table{ width:100%; border-collapse:collapse; font-size:13.5px; margin:14px 0; }
+table.doc-table th{ text-align:left; padding:9px 12px; background:var(--surface-alt); color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.4px; border-bottom:1px solid var(--border); }
+table.doc-table td{ padding:9px 12px; border-bottom:1px solid var(--border-soft); vertical-align:top; }
+
+.faq-item{ border-bottom:1px solid var(--border-soft); padding:16px 0; }
+.faq-item:last-child{ border-bottom:none; }
+.faq-item .q{ font-weight:600; font-size:14.5px; margin-bottom:6px; display:flex; gap:8px; }
+.faq-item .q::before{ content:"?"; color:var(--green); font-family:var(--font-mono); }
+.faq-item .a{ color:var(--muted); font-size:14px; line-height:1.6; margin-left:20px; }
+
+footer{ border-top:1px solid var(--border); padding-top:24px; margin-top:40px; color:var(--muted-2); font-size:12.5px; text-align:center; }
+
+@media (max-width: 900px){
+  #shell{ flex-direction:column; }
+  .toc{
+    width:100%; height:auto; position:sticky; top:0; z-index:40;
+    border-right:none; border-bottom:1px solid var(--border);
+    background:var(--bg); padding:14px 16px;
+  }
+  .toc-brand{ margin-bottom:0; }
+  .toc-footer{ display:none; }
+  .toc nav{
+    display:none; flex-direction:column; margin-top:14px; max-height:60vh; overflow-y:auto;
+  }
+  .toc.open nav{ display:flex; }
+  .toc-header-row{ display:flex; align-items:center; justify-content:space-between; }
+  .menu-toggle{
+    display:flex; align-items:center; gap:6px; background:var(--surface-alt); border:1px solid var(--border);
+    color:var(--text); border-radius:8px; padding:8px 12px; font-size:12.5px; font-family:inherit; cursor:pointer;
+  }
+  main{ padding:32px 20px 80px; }
+  .hero h1{ font-size:32px; }
+  .two-col{ grid-template-columns:1fr; }
+  .sec-head h2{ font-size:22px; }
+}
+</style>
+</head>
+<body>
+
+<div id="shell">
+  <aside class="toc" id="toc">
+    <div class="toc-header-row">
+      <div class="toc-brand">
+        <span class="mark">◈</span>
+        <div>
+          <strong>Extrato</strong>
+          <small>guia do usuário</small>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle">☰ Índice</button>
+    </div>
+    <nav id="tocNav">
+      <a href="#primeiros-passos"><span class="toc-ico">🔒</span> Primeiros passos</a>
+      <a href="#painel"><span class="toc-ico">▤</span> Painel</a>
+      <a href="#lancamentos"><span class="toc-ico">≡</span> Lançamentos</a>
+      <a href="#categorias"><span class="toc-ico">◇</span> Categorias</a>
+      <a href="#analises"><span class="toc-ico">◈</span> Análises</a>
+      <a href="#investimentos"><span class="toc-ico">▲</span> Investimentos</a>
+      <a href="#backup"><span class="toc-ico">⇄</span> Backup</a>
+      <a href="#graficos"><span class="toc-ico">▦</span> Personalizar gráficos</a>
+      <a href="#privacidade"><span class="toc-ico">🛡️</span> Privacidade</a>
+      <a href="#dispositivos"><span class="toc-ico">📱</span> Desktop vs. mobile</a>
+      <a href="#faq"><span class="toc-ico">?</span> Perguntas frequentes</a>
+    </nav>
+    <div class="toc-footer">
+      Este guia é só um manual. Seus dados reais ficam sempre dentro do próprio app, nunca aqui.
+    </div>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <div class="eyebrow">Guia do usuário</div>
+      <h1>Como usar o Extrato</h1>
+      <p>Um manual completo de cada tela e cada botão do seu controle financeiro pessoal — para você (ou qualquer pessoa que for usar) entender exatamente o que cada funcionalidade faz.</p>
+      <div class="pill-row">
+        <span class="pill">🔒 <b>Dados locais</b> — nunca saem do seu computador</span>
+        <span class="pill">💾 <b>Sem servidor</b> — arquivo único, roda no navegador</span>
+        <span class="pill">🇧🇷 <b>Feito à mão</b> por Eduardo Machado Martins</span>
+      </div>
+    </div>
+
+    <!-- ================= PRIMEIROS PASSOS ================= -->
+    <section id="primeiros-passos">
+      <div class="sec-head">
+        <div class="sec-badge badge-green">🔒</div>
+        <div>
+          <h2>Primeiros passos</h2>
+          <p class="sec-sub">Cadastro, login e como manter suas finanças privadas mesmo com outras pessoas usando o mesmo computador.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Criando sua conta</h3>
+        <p>Na primeira vez que você abrir o app neste navegador, aparece uma tela pedindo <b>nome</b>, <b>e-mail</b>, <b>senha</b> e a senha repetida. Essa conta é local — ela existe só para travar o acesso ao app neste dispositivo.</p>
+        <ul>
+          <li>O <b>nome e e-mail</b> são enviados uma única vez, por e-mail, só para quem criou o app saber quem está usando.</li>
+          <li>A <b>senha nunca é enviada para lugar nenhum</b> — ela é transformada num código (hash) e guardada só no seu navegador. Nem quem criou o app consegue ver sua senha.</li>
+          <li>Todos os seus lançamentos, categorias e investimentos ficam <b>100% no seu computador</b>, sempre.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Entrando nas próximas vezes</h3>
+        <p>Depois do primeiro cadastro, toda vez que o app abrir ele vai pedir sua <b>senha</b> — isso impede que outra pessoa usando o mesmo computador ou celular abra o app e veja suas finanças.</p>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>🔒 Botão Bloquear</h3>
+          <p>Trava o app na hora, sem apagar nada. Use antes de sair do computador ou entregar o celular pra alguém — a pessoa vai precisar da sua senha pra continuar de onde você parou.</p>
+        </div>
+        <div class="card">
+          <h3>Esqueci minha senha</h3>
+          <p>No login, clique em <b>"Esqueci minha senha"</b>. O app pede o e-mail que você cadastrou como confirmação. Se acertar, ele cria uma conta nova — mas <b>seus lançamentos e categorias continuam intactos</b>, só a senha muda.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-label">Por que confirmar o e-mail?</span>
+        Sem isso, qualquer pessoa que pegasse seu computador aberto poderia clicar em "esqueci a senha" e criar uma conta nova pra ver seus dados. Não é uma segurança perfeita (quem souber seu e-mail ainda consegue), mas evita o acesso casual.
+      </div>
+    </section>
+
+    <!-- ================= PAINEL ================= -->
+    <section id="painel">
+      <div class="sec-head">
+        <div class="sec-badge badge-green">▤</div>
+        <div>
+          <h2>Painel</h2>
+          <p class="sec-sub">A visão geral das suas finanças no ano — o ponto de partida de cada visita ao app.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Escolhendo o período</h3>
+        <p>No topo, você escolhe o <b>ano</b> (afeta todo o app) e, dentro do Painel, o <b>mês em destaque</b> — pode ser um mês específico ou <b>"Todos os meses"</b>, que mostra o ano inteiro somado.</p>
+      </div>
+
+      <div class="card">
+        <h3>Os 6 números do topo</h3>
+        <table class="doc-table">
+          <tr><th>Card</th><th>O que significa</th></tr>
+          <tr><td><b>Receitas</b></td><td>Tudo que entrou no período.</td></tr>
+          <tr><td><b>Despesas</b></td><td>Tudo que saiu com contas fixas e variáveis (sem contar investimentos).</td></tr>
+          <tr><td><b>Sobra bruta</b></td><td>Receitas − Despesas. É o que ficou disponível <i>antes</i> de decidir investir alguma parte.</td></tr>
+          <tr><td><b>Investido</b></td><td>Quanto foi direcionado para categorias do tipo Investimento no período.</td></tr>
+          <tr><td><b>Caixa líquido</b></td><td>Sobra bruta − Investido. É o que realmente ficou na conta depois de também investir. <b>Fica vermelho se for negativo</b> — sinal de que você investiu mais do que sobrou.</td></tr>
+          <tr><td><b>Caixa acumulado no ano</b></td><td>A soma do Caixa líquido de todos os meses até aqui — a "régua" de como o ano está indo de verdade.</td></tr>
+        </table>
+        <div class="callout callout-tip">
+          <span class="callout-label">Por que separar sobra bruta de caixa líquido?</span>
+          Investir não é gastar — o dinheiro só trocou de forma. Separando os dois números, você vê tanto quanto sobrou da renda quanto quanto realmente ficou disponível na conta corrente.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Os gráficos</h3>
+        <ul>
+          <li><b>Receitas vs. Despesas por mês</b> — quando você seleciona um mês específico, os outros meses ficam mais apagados, só como referência visual.</li>
+          <li><b>Despesas por categoria</b> — de onde saiu o dinheiro no período selecionado.</li>
+          <li><b>Evolução: caixa vs. investido</b> — duas linhas mostrando como seu caixa acumulado e seu total investido crescem ao longo do ano. Juntas, dão a visão do seu patrimônio total.</li>
+          <li><b>Fixas vs. variáveis</b> — proporção entre contas recorrentes e gastos do dia a dia.</li>
+          <li><b>Maiores categorias de despesa</b> — o ranking do que mais pesa no orçamento.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Modo "Todos os meses"</h3>
+        <p>Ao selecionar essa opção, aparecem 4 mini-gráficos extra mostrando a evolução mês a mês de <b>Energia Elétrica</b>, <b>Água</b>, <b>Internet</b> e <b>Investimentos</b> — o app procura automaticamente categorias com esses nomes. Se você renomeou essas categorias de um jeito muito diferente, o gráfico correspondente aparece vazio.</p>
+      </div>
+    </section>
+
+    <!-- ================= LANÇAMENTOS ================= -->
+    <section id="lancamentos">
+      <div class="sec-head">
+        <div class="sec-badge badge-blue">≡</div>
+        <div>
+          <h2>Lançamentos</h2>
+          <p class="sec-sub">Onde você registra cada receita, despesa ou investimento.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Adicionar, editar e excluir</h3>
+        <p>Clique em <b>"+ Novo lançamento"</b> e preencha categoria, data, valor e uma descrição opcional. Cada linha da lista tem botões para editar (✎) ou excluir (🗑).</p>
+      </div>
+
+      <div class="card">
+        <h3>Filtros</h3>
+        <p>Filtre por mês, tipo (receita/despesa fixa/despesa variável/investimento), categoria específica, ou busque por texto na descrição. O botão <b>"Limpar filtros"</b> volta tudo ao normal.</p>
+      </div>
+
+      <div class="card">
+        <h3>Dia de fechamento da fatura</h3>
+        <p>Se uma categoria (normalmente cartão de crédito) tiver um <b>dia de fechamento</b> configurado em Categorias, os lançamentos passam a contar pela <i>fatura</i>, não pelo mês do calendário — em todo o app, não só aqui.</p>
+        <div class="example-box">
+          Fechamento configurado: <b>dia 14</b><br>
+          Compra em 10/07 <span class="arrow">→</span> conta na fatura de <b>Julho</b><br>
+          Compra em 20/07 <span class="arrow">→</span> conta na fatura de <b>Agosto</b><br>
+          Compra em 14/08 <span class="arrow">→</span> conta na fatura de <b>Agosto</b>
+        </div>
+        <p>Quando existe alguma categoria assim, um aviso aparece no topo da lista de Lançamentos te lembrando disso — útil se você estiver procurando uma compra por data e ela aparecer "no mês errado".</p>
+      </div>
+    </section>
+
+    <!-- ================= CATEGORIAS ================= -->
+    <section id="categorias">
+      <div class="sec-head">
+        <div class="sec-badge badge-purple">◇</div>
+        <div>
+          <h2>Categorias</h2>
+          <p class="sec-sub">Como organizar suas contas, receitas e investimentos do seu jeito.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Os 4 grupos</h3>
+        <div class="kv-grid">
+          <div class="kv"><span class="k">Despesa fixa</span><span class="v">Contas recorrentes: aluguel, energia, internet, cartão…</span></div>
+          <div class="kv"><span class="k">Despesa variável</span><span class="v">Gastos do dia a dia: mercado, lazer, pix, imprevistos…</span></div>
+          <div class="kv"><span class="k">Receita</span><span class="v">Salário, bônus, vendas, reembolsos…</span></div>
+          <div class="kv"><span class="k">Investimento</span><span class="v">Aportes em ações, cripto, previdência…</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Criando e editando</h3>
+        <p>Clique em <b>"+ Nova categoria"</b> e escolha nome, tipo, cor e, se quiser, o dia de fechamento (explicado na seção de Lançamentos). Para editar, clique no ícone ✎ do chip da categoria.</p>
+        <div class="callout callout-warn">
+          <span class="callout-label">Atenção ao excluir</span>
+          Excluir uma categoria que já tem lançamentos apaga esses lançamentos também. O app avisa antes e mostra quantos serão apagados.
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Categorias sem uso ficam ocultas</h3>
+        <p>Para não deixar a lista poluída, categorias sem nenhum lançamento no ano selecionado ficam escondidas automaticamente — em Categorias, no filtro de Lançamentos e na lista de "Meus Gráficos". Se precisar editar ou reativar uma delas, use o botão <b>"Mostrar/ocultar sem uso"</b> no topo da aba Categorias.</p>
+      </div>
+    </section>
+
+    <!-- ================= ANÁLISES ================= -->
+    <section id="analises">
+      <div class="sec-head">
+        <div class="sec-badge badge-amber">◈</div>
+        <div>
+          <h2>Análises</h2>
+          <p class="sec-sub">Cruzamentos automáticos para ajudar nas suas decisões financeiras.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Cards de insight</h3>
+        <p>Calculados automaticamente para o ano selecionado: maior categoria de despesa, mês com maior gasto, taxa média de poupança, taxa média de investimento, proporção entre fixas e variáveis, variação de despesas mês a mês, e uma projeção de caixa até dezembro baseada na sua média mensal.</p>
+      </div>
+
+      <div class="card">
+        <h3>Mapa de calor</h3>
+        <p>Cada categoria de despesa numa linha, cada mês numa coluna — quanto mais forte a cor, maior o gasto naquele mês. Ajuda a identificar padrões (ex: um gasto que sempre pesa mais em dezembro).</p>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3>Comparativo ano a ano</h3>
+          <p>Total de despesas de cada ano lado a lado — só aparece de forma útil se você tiver mais de um ano de dados.</p>
+        </div>
+        <div class="card">
+          <h3>Composição da receita</h3>
+          <p>De onde vem o seu dinheiro: salário, bônus, vendas, etc., no ano selecionado.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Meus Gráficos</h3>
+        <p>Sua própria ferramenta de criação de gráficos. Clique em <b>"+ Novo gráfico"</b> e escolha:</p>
+        <ol>
+          <li><b>Título</b> — como você quer chamar esse gráfico.</li>
+          <li><b>Tipo</b> — barras, linha ou pizza (total do ano).</li>
+          <li><b>Fonte de dados</b> — um grupo inteiro (ex: todas as despesas fixas somadas) ou categorias específicas que você marcar.</li>
+        </ol>
+        <p>O gráfico é sempre calculado para o ano selecionado no menu, e fica salvo até você removê-lo (ícone 🗑 no canto do card).</p>
+      </div>
+    </section>
+
+    <!-- ================= INVESTIMENTOS ================= -->
+    <section id="investimentos">
+      <div class="sec-head">
+        <div class="sec-badge badge-amber">▲</div>
+        <div>
+          <h2>Investimentos</h2>
+          <p class="sec-sub">Acompanhe seus aportes, cotações do dia, e controle manualmente o que você já tem investido.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Período</h3>
+        <p>O ano vem do seletor global do app; dentro da aba você escolhe um <b>mês específico</b> ou <b>"Todos os meses"</b> para ver o ano inteiro.</p>
+      </div>
+
+      <div class="card">
+        <h3>Cotações do dia</h3>
+        <p>Mostra o valor de <b>Dólar</b>, <b>Bitcoin</b> e <b>Solana</b> em tempo real (precisa de internet). Use o botão <b>"Atualizar"</b> para buscar de novo. Se não conseguir buscar, aparece um aviso — tente atualizar de novo mais tarde.</p>
+      </div>
+
+      <div class="card">
+        <h3>KPIs e gráficos</h3>
+        <p>Total investido no período, categoria com mais aportes, média mensal investida no ano, gráfico de evolução mês a mês, composição por categoria, e uma linha para cada categoria de investimento ao longo do ano. A tabela embaixo mostra quanto cada categoria representa em porcentagem do total.</p>
+      </div>
+
+      <div class="card">
+        <h3>Carteira — controle manual</h3>
+        <p>Uma seção separada para você anotar o que <b>já tem investido</b>, sem que isso entre em nenhuma conta do app (receitas, despesas ou investimentos do mês). Você mesmo atualiza os valores quando quiser.</p>
+        <table class="doc-table">
+          <tr><th>Tipo de ativo</th><th>O que informar</th><th>O que o app calcula</th></tr>
+          <tr><td><b>Genérico</b><br><span style="color:var(--muted)">ações, FIIs, renda fixa…</span></td><td>Nome, quantidade e valor total</td><td>Nada — você informa o valor direto (ex: MXRF11, 70 cotas, R$ 679)</td></tr>
+          <tr><td><b>Dólar</b></td><td>Quantidade em US$</td><td>Valor estimado em R$, usando a cotação do dia</td></tr>
+          <tr><td><b>Bitcoin</b></td><td>Quantidade em satoshis</td><td>Equivalente em BTC, valor em US$ e em R$, usando a cotação do dia</td></tr>
+        </table>
+        <div class="callout callout-info">
+          Se a cotação ainda não foi carregada, o valor de ativos em Dólar ou Bitcoin aparece como "cotação não carregada" — vá em Cotações do dia e clique em Atualizar.
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BACKUP ================= -->
+    <section id="backup">
+      <div class="sec-head">
+        <div class="sec-badge badge-coral">⇄</div>
+        <div>
+          <h2>Backup</h2>
+          <p class="sec-sub">Como salvar, transferir ou reiniciar seus dados.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Exportar</h3>
+        <ul>
+          <li><b>Exportar JSON</b> — salva absolutamente tudo (categorias, lançamentos, conta de acesso, gráficos personalizados, carteira) num arquivo. Use isso para guardar uma cópia de segurança ou levar seus dados para outro computador/celular.</li>
+          <li><b>Exportar CSV dos lançamentos</b> — uma versão simplificada, só com os lançamentos, para abrir numa planilha.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Importar</h3>
+        <p>Escolha um arquivo <code>.json</code> exportado anteriormente. <b>Isso substitui todos os dados atuais deste navegador</b>, inclusive a conta de acesso — se o backup tiver uma conta diferente, você vai precisar logar com a senha de quem exportou aquele arquivo.</p>
+      </div>
+
+      <div class="card">
+        <h3>Apagar tudo e recomeçar</h3>
+        <p>Remove categorias, lançamentos e a conta de acesso deste dispositivo, e pede um novo cadastro. Use com cuidado — não tem como desfazer.</p>
+      </div>
+
+      <div class="callout callout-warn">
+        <span class="callout-label">Seus dados só existem aqui</span>
+        Como tudo fica no navegador (nada na internet), limpar o cache do navegador, trocar de celular, ou usar modo anônimo apaga seus dados. Exporte um backup de vez em quando.
+      </div>
+    </section>
+
+    <!-- ================= GRÁFICOS ================= -->
+    <section id="graficos">
+      <div class="sec-head">
+        <div class="sec-badge badge-blue">▦</div>
+        <div>
+          <h2>Personalizar gráficos</h2>
+          <p class="sec-sub">Troque o estilo visual de qualquer gráfico do app.</p>
+        </div>
+      </div>
+      <div class="card">
+        <p>No canto superior direito de praticamente todo gráfico existe um pequeno botão <code>▦</code>. Clique nele para escolher entre estilos como <b>Barras</b>, <b>Linha</b>, <b>Rosca</b> ou <b>Pizza</b> (as opções variam de acordo com o tipo de gráfico). Sua escolha fica salva — não precisa configurar de novo a cada vez que abrir o app.</p>
+      </div>
+    </section>
+
+    <!-- ================= PRIVACIDADE ================= -->
+    <section id="privacidade">
+      <div class="sec-head">
+        <div class="sec-badge badge-coral">🛡️</div>
+        <div>
+          <h2>Privacidade e segurança</h2>
+          <p class="sec-sub">O que sai do seu computador — e o que nunca sai.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <table class="doc-table">
+          <tr><th>Informação</th><th>Para onde vai</th></tr>
+          <tr><td>Nome e e-mail do cadastro</td><td>Enviados <b>uma única vez</b>, por e-mail, só para quem criou o app.</td></tr>
+          <tr><td>Senha</td><td>Nunca sai do computador. É guardada como um código (hash) que ninguém consegue reverter para descobrir a senha original.</td></tr>
+          <tr><td>Lançamentos, categorias, investimentos, carteira</td><td>Nunca saem do computador. Ficam só no armazenamento local do navegador.</td></tr>
+          <tr><td>Cotações de dólar/bitcoin/solana</td><td>O app busca essas informações na internet (não envia nada seu — só consulta o preço público).</td></tr>
+        </table>
+      </div>
+
+      <div class="callout callout-info">
+        Isso significa que seus dados não sincronizam sozinhos entre computador e celular, nem entre navegadores diferentes. Para levar seus dados de um lugar para outro, use a aba Backup.
+      </div>
+    </section>
+
+    <!-- ================= DISPOSITIVOS ================= -->
+    <section id="dispositivos">
+      <div class="sec-head">
+        <div class="sec-badge badge-green">📱</div>
+        <div>
+          <h2>Desktop vs. mobile</h2>
+          <p class="sec-sub">Duas versões do mesmo app, cada uma pensada para sua tela.</p>
+        </div>
+      </div>
+      <div class="card">
+        <p>Existem dois arquivos: um para computador (menu lateral) e um para celular (barra de navegação inferior, lançamentos em formato de cartão). Os dois têm exatamente as mesmas funcionalidades — só a forma de exibir muda.</p>
+        <div class="callout callout-warn">
+          <span class="callout-label">Eles não compartilham dados automaticamente</span>
+          Cada versão guarda seus dados separadamente no navegador. Escolha uma versão por dispositivo (por exemplo: mobile no celular, desktop no computador) e use a aba Backup se precisar levar os dados de um pro outro.
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section id="faq">
+      <div class="sec-head">
+        <div class="sec-badge badge-green">?</div>
+        <div>
+          <h2>Perguntas frequentes</h2>
+          <p class="sec-sub">Dúvidas rápidas, respostas diretas.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="faq-item">
+          <div class="q">Meus dados financeiros vão para a internet?</div>
+          <div class="a">Não. Só o nome e e-mail do cadastro são enviados, uma única vez. Tudo o resto fica só no seu navegador.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Esqueci minha senha, perdi meus dados?</div>
+          <div class="a">Não. "Esqueci minha senha" (depois de confirmar seu e-mail) cria uma conta de acesso nova, mas mantém todos os seus lançamentos e categorias.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Uma categoria desapareceu, o que aconteceu?</div>
+          <div class="a">Ela provavelmente está oculta por não ter nenhum lançamento no ano selecionado. Vá em Categorias e clique em "Mostrar/ocultar sem uso".</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Posso usar em mais de um dispositivo?</div>
+          <div class="a">Sim, mas não é automático. Exporte um backup no primeiro dispositivo (aba Backup) e importe no segundo.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">Por que uma compra no cartão apareceu no mês errado?</div>
+          <div class="a">Se a categoria do cartão tem um dia de fechamento configurado, o app agrupa pela fatura, não pela data exata da compra. Veja a seção Lançamentos para entender a regra.</div>
+        </div>
+        <div class="faq-item">
+          <div class="q">A Carteira entra nos totais do Painel?</div>
+          <div class="a">Não. A Carteira é só um controle manual e informativo — não afeta receitas, despesas ou investimentos calculados em nenhuma outra tela.</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Extrato — controle financeiro pessoal · guia criado para acompanhar o app · seus dados continuam sempre com você
+    </footer>
+  </main>
+</div>
+
+<script>
+  // toggle do índice no mobile
+  const toc = document.getElementById('toc');
+  const toggle = document.getElementById('menuToggle');
+  if (toggle){
+    toggle.addEventListener('click', () => toc.classList.toggle('open'));
+    document.getElementById('tocNav').querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => toc.classList.remove('open'));
+    });
+  }
+
+  // destaca o item ativo do índice conforme a rolagem
+  const sections = Array.from(document.querySelectorAll('main section[id]'));
+  const links = Array.from(document.querySelectorAll('.toc a'));
+  function onScroll(){
+    let current = sections[0];
+    for (const s of sections){
+      if (s.getBoundingClientRect().top < 120) current = s;
+    }
+    links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + current.id));
+  }
+  document.addEventListener('scroll', onScroll);
+  onScroll();
+</script>
+
+</body>
+</html>

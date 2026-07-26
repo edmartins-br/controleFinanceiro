@@ -110,6 +110,40 @@ button, input, select{ font-family: inherit; color: inherit; }
   border: 1px solid var(--border);
 }
 
+.help-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+.help-overlay[hidden]{ display:none; }
+.help-overlay-header{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.help-overlay-header .btn-icon{
+  font-size: 16px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+.help-iframe{
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: var(--bg);
+}
+
 .brand{
   display:flex;
   align-items:center;
@@ -812,9 +846,19 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
     </div>
     <div class="topbar-actions">
       <select id="yearSelect" class="topbar-year"></select>
+      <button class="btn-icon topbar-lock" id="btnAjuda" title="Ajuda">❓</button>
       <button class="btn-icon topbar-lock" id="btnBloquear" title="Bloquear">🔒</button>
     </div>
   </header>
+
+  <!-- ===== AJUDA (overlay com a documentação, mobile) ===== -->
+  <div class="help-overlay" id="helpOverlay" hidden>
+    <div class="help-overlay-header">
+      <span>📖 Ajuda / Documentação</span>
+      <button class="btn-icon" id="btnCloseHelp" title="Fechar">✕</button>
+    </div>
+    <iframe id="helpIframe" class="help-iframe" title="Documentação do Extrato"></iframe>
+  </div>
 
   <!-- ===== MAIN ===== -->
   <main class="main">
@@ -3122,6 +3166,20 @@ function setupAuth(){
   });
 }
 
+function setupHelpOverlay(){
+  const overlay = document.getElementById('helpOverlay');
+  const iframe = document.getElementById('helpIframe');
+
+  document.getElementById('btnAjuda').addEventListener('click', ()=>{
+    if (!iframe.src){ iframe.src = 'documentacao.html'; }
+    overlay.hidden = false;
+  });
+
+  document.getElementById('btnCloseHelp').addEventListener('click', ()=>{
+    overlay.hidden = true;
+  });
+}
+
 /* ============================================================
    BACKUP
    ============================================================ */
@@ -3265,6 +3323,7 @@ function init(){
   setupCotacoes();
   setupCarteira();
   setupAuth();
+  setupHelpOverlay();
   injectChartStyleButtons();
   renderAll();
   showAuthOverlay();
