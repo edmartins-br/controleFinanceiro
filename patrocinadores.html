@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrocinadores — Extrato</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:            #10141A;
+  --surface:       #171D26;
+  --surface-alt:   #1E2631;
+  --border:        #2A333F;
+  --border-soft:   #212a35;
+  --text:          #E9ECF1;
+  --muted:         #8B95A6;
+  --muted-2:       #5E6779;
+  --green:         #4ED8A4;
+  --green-soft:    rgba(78, 216, 164, .14);
+  --amber:         #EFBB55;
+  --amber-soft:    rgba(239, 187, 85, .14);
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body:    'Inter', sans-serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body); -webkit-font-smoothing:antialiased;
+  background-image: repeating-linear-gradient(to bottom, transparent 0px, transparent 27px, rgba(255,255,255,0.012) 28px);
+}
+a{ color:var(--green); text-decoration:none; }
+a:hover{ text-decoration:underline; }
+
+main{ max-width:760px; margin:0 auto; padding: 48px 28px 80px; }
+
+.brand{ display:flex; align-items:center; gap:10px; margin-bottom:28px; }
+.brand .mark{ font-size:22px; color:var(--green); }
+.brand strong{ display:block; font-family:var(--font-display); font-size:17px; }
+.brand small{ color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.8px; }
+
+h1{ font-family:var(--font-display); font-size:32px; margin:0 0 10px; letter-spacing:-.3px; }
+.sub{ color:var(--muted); font-size:15px; margin:0 0 36px; line-height:1.6; }
+
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:26px 28px; margin-bottom:20px;
+}
+.card h2{ font-family:var(--font-display); font-size:19px; margin:0 0 12px; }
+.card p{ font-size:14.5px; line-height:1.7; margin:0 0 12px; color:var(--text); }
+.card p:last-child{ margin-bottom:0; }
+
+.btn-coffee{
+  display:inline-flex; align-items:center; gap:8px;
+  background: var(--amber); color:#231705;
+  font-family: var(--font-display); font-weight:700; font-size:15px;
+  padding: 13px 26px; border-radius: 10px; margin-top:10px;
+  box-shadow: 0 10px 26px rgba(239,187,85,.18);
+  transition: background .15s, transform .1s;
+}
+.btn-coffee:hover{ background:#f5cb73; text-decoration:none; }
+.btn-coffee:active{ transform: scale(.97); }
+
+.note{
+  font-size:12.5px; color:var(--muted-2); margin-top:14px; line-height:1.6;
+}
+
+.sponsors-grid{
+  display:grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap:14px; margin-top:6px;
+}
+.sponsor-card{
+  display:block; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px 16px; text-align:center; transition: border-color .15s, background .15s;
+}
+a.sponsor-card:hover{ border-color:var(--green); background:var(--surface); text-decoration:none; }
+.sponsor-card img{ max-width:100%; max-height:48px; margin-bottom:10px; }
+.sponsor-card .nome{ font-weight:600; font-size:13.5px; margin-bottom:4px; color:var(--text); }
+.sponsor-card .desc{ font-size:12px; color:var(--muted); line-height:1.5; }
+
+.ad-card{
+  display:block; background:var(--surface-alt); border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:20px; text-align:center; margin-bottom:14px; transition: border-color .15s, background .15s;
+}
+a.ad-card:hover{ border-color:var(--amber); background:var(--surface); text-decoration:none; }
+.ad-card:last-child{ margin-bottom:0; }
+.ad-card img{ max-width:100%; border-radius:8px; display:block; margin:0 auto 10px; }
+.ad-card .ad-caption{ font-size:12.5px; color:var(--muted); }
+.ad-card .ad-caption .nome{ color:var(--text); font-weight:600; }
+
+.empty-state{
+  text-align:center; color:var(--muted); font-size:13.5px; padding: 24px 10px;
+  border:1px dashed var(--border); border-radius:var(--radius); margin-top:6px;
+}
+
+footer{ text-align:center; color:var(--muted-2); font-size:12px; margin-top:36px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">
+    <span class="mark">◈</span>
+    <div>
+      <strong>Extrato</strong>
+      <small>controle financeiro</small>
+    </div>
+  </div>
+
+  <h1>Patrocinadores</h1>
+  <p class="sub">O Extrato é gratuito hoje e sempre vai continuar sendo.</p>
+
+  <div class="card">
+    <h2>☕ Sobre o projeto</h2>
+    <p>O Extrato nasceu de uma planilha pessoal usada desde 2016, transformada num aplicativo completo pra ajudar qualquer pessoa a organizar a própria vida financeira. Não existe assinatura, não existe cobrança pra usar — e não é isso que vai mudar.</p>
+    <p>Se o app te ajudou de alguma forma e você quiser retribuir, uma doação é sempre bem-vinda — mas é totalmente opcional. Ela ajuda a manter o projeto no ar e a continuar evoluindo com novas funcionalidades.</p>
+    <a class="btn-coffee" href="https://www.buymeacoffee.com/COLOQUE_SEU_USUARIO_AQUI" target="_blank" rel="noopener">☕ Me pague um café</a>
+    <p class="note">Você será redirecionado para um serviço externo de doações. O Extrato não processa nem guarda nenhum dado de pagamento.</p>
+  </div>
+
+  <div class="card">
+    <h2>Anúncios</h2>
+    <p style="margin-bottom:14px;">Conteúdo em destaque de quem apoia o projeto.</p>
+    <div id="adsWrap" hidden></div>
+    <p class="empty-state" id="emptyAds" >Nenhum anúncio no momento.</p>
+  </div>
+
+  <div class="card">
+    <h2>Quem apoia o Extrato</h2>
+    <p style="margin-bottom:14px;">Empresas e pessoas que ajudam a manter o projeto no ar.</p>
+    <div class="sponsors-grid" id="sponsorsGrid" hidden></div>
+    <p class="empty-state" id="emptySponsors" >Ainda não há patrocinadores — em breve!</p>
+  </div>
+
+  <footer>Extrato — controle financeiro pessoal · criado por Eduardo Machado Martins</footer>
+</main>
+</body>
+</html>

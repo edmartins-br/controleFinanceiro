@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Extrato — Controle Financeiro Pessoal</title>
+<meta name="description" content="Extrato é um app gratuito de controle financeiro pessoal. Painel, categorias, análises, investimentos e mais — seus dados ficam só no seu computador, nunca na internet.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Extrato — Controle Financeiro Pessoal">
+<meta property="og:description" content="App gratuito de controle financeiro pessoal. Seus dados ficam só no seu computador, nunca na internet.">
+<meta property="og:image" content="https://COLOQUE-SEU-DOMINIO-AQUI.com/og-image.png">
+<meta property="og:site_name" content="Extrato">
+<meta property="og:locale" content="pt_BR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Extrato — Controle Financeiro Pessoal">
+<meta name="twitter:description" content="App gratuito de controle financeiro pessoal. Seus dados ficam só no seu computador, nunca na internet.">
+<meta name="twitter:image" content="https://COLOQUE-SEU-DOMINIO-AQUI.com/og-image.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Extrato">
@@ -223,6 +234,15 @@ button, input, select{ font-family: inherit; color: inherit; }
 .view.active{ display:block; animation: fadeIn .25s ease; }
 @keyframes fadeIn{ from{opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
 
+.painel-saudacao{
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  letter-spacing: .2px;
+}
+.painel-saudacao b{ color: var(--text); font-weight: 600; }
+
 .view-header{
   display:flex;
   align-items:flex-end;
@@ -272,6 +292,8 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
 .btn-ghost:hover{ background: var(--surface-alt); }
 .btn-danger{ background: var(--coral); color:#1a0a08; }
 .btn-danger:hover{ background:#ff8f86; }
+.btn-import{ display:inline-block; background: var(--blue); color:#0A1420; }
+.btn-import:hover{ background:#8FC1F0; }
 .btn-icon{
   background: transparent; border: none; cursor:pointer; color: var(--muted);
   font-size: 15px; padding: 4px 7px; border-radius: 6px;
@@ -447,6 +469,7 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
   position: absolute;
   top: 10px;
   right: 10px;
+  z-index: 10;
 }
 
 /* ============================== FILTERS / TABLE ============================== */
@@ -593,6 +616,8 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
 .insight-card .ico{ font-size: 18px; margin-bottom:8px; display:block; }
 .insight-card h4{ margin: 0 0 6px; font-size: 13px; color: var(--muted); font-weight:500; }
 .insight-card p{ margin:0; font-family: var(--font-mono); font-size: 15px; line-height:1.4; }
+.insight-card p.val-pos{ color: var(--green); }
+.insight-card p.val-neg{ color: var(--coral); }
 .insight-card small{ display:block; margin-top:6px; color: var(--muted-2); font-size: 11.5px; font-family: var(--font-body); }
 
 /* ============================== BACKUP ============================== */
@@ -756,6 +781,22 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
   box-shadow: 0 10px 30px rgba(0,0,0,.4);
 }
 
+/* ============================== PATROCINADORES ============================== */
+.sponsors-frame-wrap{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  height: calc(100vh - 220px);
+  min-height: 420px;
+}
+.sponsors-iframe{
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: var(--bg);
+}
+
 /* ============================== RESPONSIVE ============================== */
 
 </style>
@@ -805,6 +846,8 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
         </div>
       </div>
       <button type="submit" class="btn btn-primary" style="width:100%;">Criar conta e entrar</button>
+      <button type="button" class="btn btn-ghost" id="btnJaTenhoBackup" style="width:100%; margin-top:8px;">📂 Já tenho um backup — importar e continuar</button>
+      <input type="file" id="authImportFile" accept="application/json" hidden>
     </form>
 
     <!-- ---- LOGIN (já existe conta neste dispositivo) ---- -->
@@ -865,6 +908,7 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
 
     <!-- ---------- DASHBOARD ---------- -->
     <section class="view active" id="view-dashboard">
+      <p class="painel-saudacao" id="painelSaudacao"></p>
       <header class="view-header">
         <div>
           <h1>Painel do ano <span id="dashYear"></span></h1>
@@ -969,6 +1013,16 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
             <div class="chart-box" style="height:200px"><canvas id="chartInvestAno"></canvas></div>
           </div>
         </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Meus gráficos</h3>
+          <button class="btn btn-primary" id="btnNovoGraficoCustomPainel" style="padding:7px 14px;font-size:12.5px;">+ Novo gráfico</button>
+        </div>
+        <p class="sub" style="margin:0 0 14px;">Monte seus próprios gráficos escolhendo categorias, tipo e visual. Ficam salvos aqui, sempre calculados para o ano selecionado.</p>
+        <div class="custom-charts-grid" id="customChartsGridPainel"></div>
+        <p class="empty-state" id="emptyCustomChartsPainel" hidden>Você ainda não criou nenhum gráfico personalizado aqui. Clique em "+ Novo gráfico" para montar o primeiro.</p>
       </div>
     </section>
 
@@ -1172,6 +1226,16 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
           <p class="empty-state" id="emptyCarteira" hidden>Nenhum ativo cadastrado ainda. Clique em "+ Novo ativo" para começar a controlar sua carteira.</p>
         </div>
       </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Meus gráficos</h3>
+          <button class="btn btn-primary" id="btnNovoGraficoCustomInvest" style="padding:7px 14px;font-size:12.5px;">+ Novo gráfico</button>
+        </div>
+        <p class="sub" style="margin:0 0 14px;">Monte seus próprios gráficos escolhendo categorias, tipo e visual. Ficam salvos aqui, sempre calculados para o ano selecionado.</p>
+        <div class="custom-charts-grid" id="customChartsGridInvest"></div>
+        <p class="empty-state" id="emptyCustomChartsInvest" hidden>Você ainda não criou nenhum gráfico personalizado aqui. Clique em "+ Novo gráfico" para montar o primeiro.</p>
+      </div>
     </section>
     <section class="view" id="view-backup">
       <header class="view-header">
@@ -1184,20 +1248,29 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
       <div class="panel backup-panel">
         <h3>Exportar</h3>
         <p>Salve todos os seus lançamentos e categorias em um arquivo <code>.json</code> para guardar ou transferir de computador.</p>
-        <button class="btn btn-primary" id="btnExportJson">Exportar JSON</button>
+        <p class="field-hint" id="backupStatus" style="margin:-4px 0 12px;"></p>
+        <button class="btn btn-primary" id="btnExportJson">Exportar Dados</button>
         <button class="btn btn-ghost" id="btnExportCsv">Exportar CSV dos lançamentos</button>
       </div>
 
       <div class="panel backup-panel">
         <h3>Importar</h3>
         <p>Selecione um arquivo <code>.json</code> exportado anteriormente. Isso substitui os dados atuais deste navegador.</p>
-        <input type="file" id="importFile" accept="application/json">
+        <label class="btn btn-import" for="importFile">Importar Dados</label>
+        <input type="file" id="importFile" accept="application/json" hidden>
       </div>
 
       <div class="panel backup-panel danger">
         <h3>Reiniciar dados</h3>
         <p>Remove todas as categorias e lançamentos deste navegador e recarrega os dados de exemplo.</p>
         <button class="btn btn-danger" id="btnResetData">Apagar tudo e recomeçar</button>
+      </div>
+    </section>
+
+    <!-- ---------- PATROCINADORES ---------- -->
+    <section class="view" id="view-patrocinadores">
+      <div class="sponsors-frame-wrap">
+        <iframe id="sponsorsIframe" class="sponsors-iframe" title="Patrocinadores"></iframe>
       </div>
     </section>
 
@@ -1222,6 +1295,9 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
     </button>
     <button class="nav-item" data-view="backup">
       <span class="nav-ico">⇄</span><span class="nav-label">Backup</span>
+    </button>
+    <button class="nav-item" data-view="patrocinadores">
+      <span class="nav-ico">☕</span><span class="nav-label">Patroc.</span>
     </button>
   </nav>
 </div>
@@ -1304,7 +1380,7 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
 <div class="modal-backdrop" id="modalCustomChart" hidden>
   <div class="modal modal-wide">
     <div class="modal-head">
-      <h3>Novo gráfico personalizado</h3>
+      <h3 id="modalCustomChartTitle">Novo gráfico personalizado</h3>
       <button class="modal-close" data-close-modal="modalCustomChart">&times;</button>
     </div>
     <form id="formCustomChart">
@@ -1505,15 +1581,21 @@ function loadState(){
         if (!parsed.chartStyles || typeof parsed.chartStyles !== 'object') parsed.chartStyles = {};
         if (!Array.isArray(parsed.carteira)) parsed.carteira = [];
         if (parsed.conta === undefined) parsed.conta = null;
+        if (parsed.lastBackupExport === undefined) parsed.lastBackupExport = null;
         return parsed;
       }
     }catch(e){ console.warn('Falha ao ler dados salvos, recriando.', e); }
   }
-  return { categories: defaultCategories(), entries: [], customCharts: [], chartStyles: {}, carteira: [], conta: null };
+  return { categories: defaultCategories(), entries: [], customCharts: [], chartStyles: {}, carteira: [], conta: null, lastBackupExport: null };
 }
 
 function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.error('Falha ao salvar no localStorage:', e);
+    alert('Não foi possível salvar agora. Isso pode acontecer se o armazenamento do navegador estiver cheio ou se você estiver numa aba anônima/privada. Tente liberar espaço (ex: removendo logos grandes da Carteira ou de gráficos) e tente de novo. Se puder, exporte um backup pela aba Backup como precaução.');
+  }
 }
 
 function uid(){
@@ -1688,7 +1770,23 @@ function setupNav(){
    RENDER: DASHBOARD
    ============================================================ */
 
+const MESES_EXTENSO = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const DIAS_SEMANA = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+
+function renderPainelSaudacao(){
+  const el = document.getElementById('painelSaudacao');
+  if (!el) return;
+  const nome = (state.conta && state.conta.nome) ? state.conta.nome.split(' ')[0] : '';
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2,'0');
+  const mes = MESES_EXTENSO[now.getMonth()];
+  const ano = now.getFullYear();
+  const diaSemana = DIAS_SEMANA[now.getDay()];
+  el.innerHTML = nome ? `Olá, <b>${escapeHtml(nome)}</b>. | ${dd} de ${mes} de ${ano} | ${diaSemana}` : `Olá! | ${dd} de ${mes} de ${ano} | ${diaSemana}`;
+}
+
 function renderDashboard(){
+  renderPainelSaudacao();
   document.getElementById('dashYear').textContent = currentYear;
   const totals = monthlyTotals(currentYear);
   const acc = accumulatedBalance(currentYear);       // caixa acumulado
@@ -1768,6 +1866,7 @@ function renderDashboard(){
   renderChartSaldoEvolucao(acc, accInv);
   renderChartFixasVariaveis(totals);
   renderChartTopCategorias();
+  renderCustomChartsSection('painel');
 }
 
 function setDelta(elId, prevObj, curVal, prevVal, label){
@@ -2084,14 +2183,14 @@ function populateCategorySelectors(){
   const curFilterVal = filterCat.value;
   filterCat.innerHTML = '<option value="">Todas as categorias</option>' +
     groupedUsed.map(g => g.cats.length ? `<optgroup label="${GROUP_TITLES[g.grupo]}">${
-      g.cats.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')
+      g.cats.map(c=>`<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('')
     }</optgroup>` : '').join('');
   filterCat.value = curFilterVal;
 
   // modal select: mostra TODAS as categorias (mesmo sem uso ainda neste ano)
   const lancCat = document.getElementById('lancCategoria');
   lancCat.innerHTML = grouped.map(g => `<optgroup label="${GROUP_TITLES[g.grupo]}">${
-    g.cats.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')
+    g.cats.map(c=>`<option value="${c.id}">${escapeHtml(c.nome)}</option>`).join('')
   }</optgroup>`).join('');
 }
 
@@ -2146,7 +2245,7 @@ function renderLancamentos(){
     return `
       <tr>
         <td data-label="Data">${formatDateBR(e.data)}</td>
-        <td data-label="Categoria"><span class="tag-pill" style="background:${cat.cor}22;color:${cat.cor}"><span class="tag-dot" style="background:${cat.cor}"></span>${cat.nome}</span></td>
+        <td data-label="Categoria"><span class="tag-pill" style="background:${cat.cor}22;color:${cat.cor}"><span class="tag-dot" style="background:${cat.cor}"></span>${escapeHtml(cat.nome)}</span></td>
         <td data-label="Tipo">${GROUP_LABEL[cat.grupo]}</td>
         <td data-label="Descrição">${e.descricao ? escapeHtml(e.descricao) : '<span style="color:var(--muted-2)">—</span>'}</td>
         <td class="num ${cls}" data-label="Valor">${sign}${formatCurrency(Math.abs(e.valor))}</td>
@@ -2380,7 +2479,7 @@ function renderAnalises(){
   renderHeatmap();
   renderChartAnoAAno();
   renderChartComposicaoReceita();
-  renderCustomCharts();
+  renderCustomChartsSection('analises');
 }
 
 function renderInsights(){
@@ -2414,7 +2513,8 @@ function renderInsights(){
   cards.push({
     ico:'%', title:'Taxa média de poupança total (meses com receita)',
     value: monthsWithReceita.length ? taxaMedia.toFixed(1)+'%' : '—',
-    sub: 'Sobra bruta ÷ receita — quanto da renda não foi consumido, média do ano'
+    sub: 'Sobra bruta ÷ receita — quanto da renda não foi consumido, média do ano',
+    colorClass: monthsWithReceita.length ? (taxaMedia >= 0 ? 'pos' : 'neg') : null
   });
 
   // 3b. taxa média de investimento
@@ -2424,7 +2524,8 @@ function renderInsights(){
   cards.push({
     ico:'◈', title:'Taxa média de investimento (meses com receita)',
     value: monthsWithReceita.length ? taxaInvestMedia.toFixed(1)+'%' : '—',
-    sub: 'Investido ÷ receita — quanto da renda virou patrimônio, média do ano'
+    sub: 'Investido ÷ receita — quanto da renda virou patrimônio, média do ano',
+    colorClass: monthsWithReceita.length ? (taxaInvestMedia >= 0 ? 'pos' : 'neg') : null
   });
 
   // 4. proporção fixas vs variáveis
@@ -2445,7 +2546,8 @@ function renderInsights(){
     cards.push({
       ico: diff>=0 ? '▲':'▼', title:`Despesas: ${MONTHS[m-1]} vs. ${MONTHS[m-2]}`,
       value: `${diff>=0?'+':''}${pct.toFixed(0)}%`,
-      sub: diff>=0 ? 'Gastos subiram em relação ao mês anterior' : 'Gastos caíram em relação ao mês anterior'
+      sub: diff>=0 ? 'Gastos subiram em relação ao mês anterior' : 'Gastos caíram em relação ao mês anterior',
+      colorClass: diff >= 0 ? 'pos' : 'neg'
     });
   } else {
     cards.push({ ico:'▲', title:'Variação de despesas mês a mês', value:'—', sub:'Selecione um mês com histórico anterior no painel' });
@@ -2460,14 +2562,15 @@ function renderInsights(){
   cards.push({
     ico:'→', title:'Projeção de caixa até dezembro',
     value: formatCurrency(projecao),
-    sub: `Baseado na média de caixa líquido mensal (${formatCurrency(mediaCaixaMensal)}/mês) — não inclui o que for investido`
+    sub: `Baseado na média de caixa líquido mensal (${formatCurrency(mediaCaixaMensal)}/mês) — não inclui o que for investido`,
+    colorClass: projecao >= 0 ? 'pos' : 'neg'
   });
 
   wrap.innerHTML = cards.map(c => `
     <div class="insight-card">
       <span class="ico">${c.ico}</span>
       <h4>${c.title}</h4>
-      <p>${c.value}</p>
+      <p class="${c.colorClass ? 'val-'+c.colorClass : ''}">${c.value}</p>
       <small>${c.sub}</small>
     </div>`).join('');
 }
@@ -2527,10 +2630,20 @@ function customChartSeriesForCategories(catIds, year){
   return series;
 }
 
-function renderCustomCharts(){
-  const grid = document.getElementById('customChartsGrid');
-  const empty = document.getElementById('emptyCustomCharts');
-  const list = state.customCharts || [];
+const CUSTOM_CHART_SECTIONS = {
+  painel:        { grid: 'customChartsGridPainel', empty: 'emptyCustomChartsPainel' },
+  analises:      { grid: 'customChartsGrid',        empty: 'emptyCustomCharts' },
+  investimentos: { grid: 'customChartsGridInvest',  empty: 'emptyCustomChartsInvest' }
+};
+let customChartTargetSection = 'analises';
+
+function renderCustomChartsSection(secao){
+  const ids = CUSTOM_CHART_SECTIONS[secao];
+  if (!ids) return;
+  const grid = document.getElementById(ids.grid);
+  const empty = document.getElementById(ids.empty);
+  if (!grid || !empty) return;
+  const list = (state.customCharts || []).filter(c => (c.secao || 'analises') === secao);
 
   if (list.length === 0){
     grid.innerHTML = '';
@@ -2561,6 +2674,10 @@ function renderCustomCharts(){
   });
 
   list.forEach(cfg => renderOneCustomChart(cfg));
+}
+
+function renderAllCustomCharts(){
+  Object.keys(CUSTOM_CHART_SECTIONS).forEach(renderCustomChartsSection);
 }
 
 function renderOneCustomChart(cfg){
@@ -2619,7 +2736,7 @@ function deleteCustomChart(id){
   if (!confirm('Remover este gráfico personalizado?')) return;
   state.customCharts = state.customCharts.filter(c => c.id !== id);
   saveState();
-  renderCustomCharts();
+  renderAllCustomCharts();
   toast('Gráfico removido.');
 }
 
@@ -2637,14 +2754,21 @@ function populateCustomChartCategoryList(){
   }
 }
 
+function openCustomChartModal(secao){
+  customChartTargetSection = secao;
+  const titles = { painel:'Novo gráfico — Painel', analises:'Novo gráfico — Análises', investimentos:'Novo gráfico — Investimentos' };
+  document.getElementById('modalCustomChartTitle').textContent = titles[secao] || 'Novo gráfico personalizado';
+  document.getElementById('formCustomChart').reset();
+  populateCustomChartCategoryList();
+  document.getElementById('ccGrupoRow').hidden = false;
+  document.getElementById('ccCategoriaRow').hidden = true;
+  document.getElementById('modalCustomChart').hidden = false;
+}
+
 function setupCustomCharts(){
-  document.getElementById('btnNovoGraficoCustom').addEventListener('click', ()=>{
-    document.getElementById('formCustomChart').reset();
-    populateCustomChartCategoryList();
-    document.getElementById('ccGrupoRow').hidden = false;
-    document.getElementById('ccCategoriaRow').hidden = true;
-    document.getElementById('modalCustomChart').hidden = false;
-  });
+  document.getElementById('btnNovoGraficoCustom').addEventListener('click', ()=> openCustomChartModal('analises'));
+  document.getElementById('btnNovoGraficoCustomPainel').addEventListener('click', ()=> openCustomChartModal('painel'));
+  document.getElementById('btnNovoGraficoCustomInvest').addEventListener('click', ()=> openCustomChartModal('investimentos'));
 
   document.getElementById('ccFonte').addEventListener('change', (ev)=>{
     const isGrupo = ev.target.value === 'grupo';
@@ -2659,7 +2783,7 @@ function setupCustomCharts(){
     const fonte = document.getElementById('ccFonte').value;
     if (!titulo){ toast('Dê um título para o gráfico.'); return; }
 
-    const cfg = { id: uid(), titulo, tipo, fonte };
+    const cfg = { id: uid(), titulo, tipo, fonte, secao: customChartTargetSection };
     if (fonte === 'grupo'){
       cfg.grupo = document.getElementById('ccGrupo').value;
     } else {
@@ -2672,7 +2796,7 @@ function setupCustomCharts(){
     saveState();
     closeModal('modalCustomChart');
     toast('Gráfico criado.');
-    renderCustomCharts();
+    renderCustomChartsSection(customChartTargetSection);
   });
 }
 
@@ -2749,6 +2873,7 @@ function renderInvestimentos(){
   renderQuotes();
   if (!quotesCache && !quotesLoading) fetchQuotes();
   renderCarteira();
+  renderCustomChartsSection('investimentos');
 }
 
 function renderChartInvestEvolucao(totalPorMes){
@@ -3107,7 +3232,41 @@ function authError(msg){
   el.hidden = false;
 }
 
+function importBackupFromFile(file){
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const parsed = JSON.parse(reader.result);
+      if (!Array.isArray(parsed.categories) || !Array.isArray(parsed.entries)) throw new Error('formato inválido');
+      if (!Array.isArray(parsed.customCharts)) parsed.customCharts = [];
+      if (!parsed.chartStyles || typeof parsed.chartStyles !== 'object') parsed.chartStyles = {};
+      if (!Array.isArray(parsed.carteira)) parsed.carteira = [];
+      if (parsed.conta === undefined) parsed.conta = null;
+      if (parsed.lastBackupExport === undefined) parsed.lastBackupExport = null;
+      if (!confirm('Importar este arquivo vai substituir todos os dados atuais (inclusive a conta de acesso). Continuar?')) return;
+      state = parsed;
+      saveState();
+      toast('Dados importados com sucesso.');
+      renderAll(true);
+      showAuthOverlay();
+    }catch(e){
+      alert('Não foi possível importar este arquivo: ' + e.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
 function setupAuth(){
+  document.getElementById('btnJaTenhoBackup').addEventListener('click', ()=>{
+    document.getElementById('authImportFile').click();
+  });
+  document.getElementById('authImportFile').addEventListener('change', (ev)=>{
+    const file = ev.target.files[0];
+    importBackupFromFile(file);
+    ev.target.value = '';
+  });
+
   document.getElementById('formCadastro').addEventListener('submit', async (ev)=>{
     ev.preventDefault();
     const nome = document.getElementById('cadNome').value.trim();
@@ -3125,6 +3284,7 @@ function setupAuth(){
     notifyNewSignup(nome, email);
     document.getElementById('formCadastro').reset();
     hideAuthOverlay();
+    renderPainelSaudacao();
     toast(`Bem-vindo(a), ${nome}!`);
   });
 
@@ -3184,9 +3344,44 @@ function setupHelpOverlay(){
    BACKUP
    ============================================================ */
 
+function backupFileName(){
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2,'0');
+  const mm = String(now.getMonth()+1).padStart(2,'0');
+  const yyyy = now.getFullYear();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const min = String(now.getMinutes()).padStart(2,'0');
+  return `Extrato_Backup_${dd}${mm}${yyyy}_${hh}_${min}.json`;
+}
+
+function renderBackupStatus(){
+  const el = document.getElementById('backupStatus');
+  if (!el) return;
+  const last = state.lastBackupExport ? new Date(state.lastBackupExport) : null;
+  if (!last){
+    el.textContent = '⚠️ Você ainda não exportou nenhum backup.';
+    el.style.color = 'var(--coral)';
+    return;
+  }
+  const dias = Math.floor((Date.now() - last.getTime()) / 86400000);
+  if (dias <= 0){
+    el.textContent = '✅ Último backup: hoje.';
+    el.style.color = 'var(--green)';
+  } else if (dias <= 14){
+    el.textContent = `Último backup: há ${dias} dia(s).`;
+    el.style.color = 'var(--muted)';
+  } else {
+    el.textContent = `⚠️ Último backup: há ${dias} dias. Considere exportar um novo.`;
+    el.style.color = 'var(--coral)';
+  }
+}
+
 function setupBackup(){
   document.getElementById('btnExportJson').addEventListener('click', ()=>{
-    downloadFile('extrato-backup.json', JSON.stringify(state, null, 2), 'application/json');
+    state.lastBackupExport = new Date().toISOString();
+    saveState();
+    downloadFile(backupFileName(), JSON.stringify(state, null, 2), 'application/json');
+    renderBackupStatus();
     toast('Backup exportado.');
   });
   document.getElementById('btnExportCsv').addEventListener('click', ()=>{
@@ -3201,32 +3396,12 @@ function setupBackup(){
   });
   document.getElementById('importFile').addEventListener('change', (ev)=>{
     const file = ev.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const parsed = JSON.parse(reader.result);
-        if (!Array.isArray(parsed.categories) || !Array.isArray(parsed.entries)) throw new Error('formato inválido');
-        if (!Array.isArray(parsed.customCharts)) parsed.customCharts = [];
-        if (!parsed.chartStyles || typeof parsed.chartStyles !== 'object') parsed.chartStyles = {};
-        if (!Array.isArray(parsed.carteira)) parsed.carteira = [];
-        if (parsed.conta === undefined) parsed.conta = null;
-        if (!confirm('Importar este arquivo vai substituir todos os dados atuais (inclusive a conta de acesso). Continuar?')) return;
-        state = parsed;
-        saveState();
-        toast('Dados importados com sucesso.');
-        renderAll(true);
-        showAuthOverlay();
-      }catch(e){
-        alert('Não foi possível importar este arquivo: ' + e.message);
-      }
-    };
-    reader.readAsText(file);
+    importBackupFromFile(file);
     ev.target.value = '';
   });
   document.getElementById('btnResetData').addEventListener('click', ()=>{
     if (!confirm('Isso vai apagar TODAS as categorias, lançamentos E a conta de acesso deste dispositivo (você vai precisar se cadastrar de novo). Continuar?')) return;
-    state = { categories: defaultCategories(), entries: [], customCharts: [], chartStyles: {}, carteira: [], conta: null };
+    state = { categories: defaultCategories(), entries: [], customCharts: [], chartStyles: {}, carteira: [], conta: null, lastBackupExport: null };
     saveState();
     toast('Dados reiniciados.');
     renderAll(true);
@@ -3296,6 +3471,11 @@ function setupGlobalControls(){
    INIT
    ============================================================ */
 
+function renderPatrocinadores(){
+  const iframe = document.getElementById('sponsorsIframe');
+  if (iframe && !iframe.src){ iframe.src = 'patrocinadores.html'; }
+}
+
 function renderAll(reinitSelectors){
   if (reinitSelectors){
     populateYearSelect();
@@ -3306,6 +3486,7 @@ function renderAll(reinitSelectors){
   renderCategorias();
   renderAnalises();
   renderInvestimentos();
+  renderPatrocinadores();
 }
 
 function init(){
