@@ -228,15 +228,17 @@ button, input, select{ font-family: inherit; color: inherit; }
 .month-filter{ display:flex; flex-direction: column; gap: 4px; }
 .month-filter label{ font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
 
-select, input[type=text], input[type=date], input[type=number], input[type=email], input[type=password]{
+select, input[type=text], input[type=date], input[type=number], input[type=email], input[type=password], textarea{
   background: var(--surface-alt);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 8px;
   padding: 9px 12px;
   font-size: 13.5px;
+  font-family: inherit;
 }
-select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px; }
+textarea{ resize: vertical; min-height: 90px; width: 100%; }
+select:focus, input:focus, textarea:focus{ outline: 2px solid var(--green); outline-offset: 1px; }
 
 /* ============================== BUTTONS ============================== */
 .btn{
@@ -807,8 +809,8 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
     <div class="brand" style="justify-content:center; margin-bottom:6px;">
       <span class="brand-mark">◈</span>
       <div class="brand-text" style="text-align:left;">
-        <strong>Extrato</strong>
-        <small>controle financeiro</small>
+        <strong>Extrato Financeiro</strong>
+        <small>CONTROLE PESSOAL</small>
       </div>
     </div>
     <p class="auth-creator">
@@ -937,6 +939,9 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
       <div class="nav-divider"></div>
       <button class="nav-item" data-view="patrocinadores">
         <span class="nav-ico">☕</span> Patrocinadores
+      </button>
+      <button class="nav-item" data-view="contato">
+        <span class="nav-ico">✉️</span> Contato
       </button>
     </nav>
 
@@ -1323,6 +1328,37 @@ select:focus, input:focus{ outline: 2px solid var(--green); outline-offset: 1px;
     <section class="view" id="view-patrocinadores">
       <div class="sponsors-frame-wrap">
         <iframe id="sponsorsIframe" class="sponsors-iframe" title="Patrocinadores"></iframe>
+      </div>
+    </section>
+
+    <!-- ---------- CONTATO ---------- -->
+    <section class="view" id="view-contato">
+      <header class="view-header">
+        <div>
+          <h1>Contato</h1>
+          <p class="sub">Tem alguma dúvida, sugestão, ou encontrou um problema? Me manda uma mensagem.</p>
+        </div>
+      </header>
+
+      <div class="panel" style="max-width:560px;">
+        <form id="formContato">
+          <div class="form-row">
+            <label>Seu nome</label>
+            <input type="text" id="contatoNome" required placeholder="Seu nome">
+          </div>
+          <div class="form-row">
+            <label>Seu e-mail (para eu poder te responder)</label>
+            <input type="email" id="contatoEmail" required placeholder="seu@email.com">
+          </div>
+          <div class="form-row">
+            <label>Mensagem</label>
+            <textarea id="contatoMensagem" required placeholder="Escreva sua mensagem aqui..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" id="btnEnviarContato" style="width:100%;">Enviar mensagem</button>
+          <p class="field-hint" style="margin-top:12px; text-align:center;">
+            Prefere usar seu próprio e-mail? <a href="mailto:edmartins_br@outlook.com" id="contatoMailtoFallback">Clique aqui</a>.
+          </p>
+        </form>
       </div>
     </section>
 
@@ -3248,6 +3284,12 @@ const EMAILJS_PUBLIC_KEY = 'jhtzR9iJU4AYR0lzq';
 const EMAILJS_SERVICE_ID = 'service_w37cpe5';
 const EMAILJS_TEMPLATE_ID = 'template_fo7ydrm';
 
+// Template separado para a aba Contato (usa {{nome}}, {{email}}, {{mensagem}}).
+// O e-mail de destino é configurado no campo "To Email" desse template, dentro
+// do próprio EmailJS — não fica escrito aqui no código. Para trocar de e-mail
+// no futuro, basta editar esse campo no site do EmailJS, sem tocar no app.
+const EMAILJS_CONTACT_TEMPLATE_ID = 'contactus_6derz7a';
+
 async function hashPassword(pw){
   const enc = new TextEncoder().encode(pw);
   const buf = await crypto.subtle.digest('SHA-256', enc);
@@ -3274,6 +3316,56 @@ function notifyNewSignup(nome, email){
   }catch(err){
     console.warn('Falha ao enviar notificação de novo cadastro:', err);
   }
+}
+
+function contactEmailjsConfigured(){
+  return typeof emailjs !== 'undefined'
+    && !EMAILJS_PUBLIC_KEY.startsWith('COLOQUE_')
+    && !EMAILJS_SERVICE_ID.startsWith('COLOQUE_')
+    && !EMAILJS_CONTACT_TEMPLATE_ID.startsWith('COLOQUE_');
+}
+
+function setupContato(){
+  const form = document.getElementById('formContato');
+  if (!form) return;
+  form.addEventListener('submit', (ev)=>{
+    ev.preventDefault();
+    const nome = document.getElementById('contatoNome').value.trim();
+    const email = document.getElementById('contatoEmail').value.trim();
+    const mensagem = document.getElementById('contatoMensagem').value.trim();
+    if (!nome || !email || !mensagem) return;
+
+    if (!contactEmailjsConfigured()){
+      alert('O formulário de contato ainda não está configurado. Use o link de e-mail abaixo do botão pra falar comigo diretamente por enquanto.');
+      return;
+    }
+
+    const btn = document.getElementById('btnEnviarContato');
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try{
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_CONTACT_TEMPLATE_ID, {
+        nome, email, mensagem, data: new Date().toLocaleString('pt-BR')
+      }).then(()=>{
+        toast('Mensagem enviada! Obrigado pelo contato.');
+        form.reset();
+        btn.disabled = false;
+        btn.textContent = 'Enviar mensagem';
+      }).catch((err)=>{
+        console.warn('Falha ao enviar mensagem de contato:', err);
+        alert('Não foi possível enviar agora. Tente de novo em alguns instantes, ou use o link de e-mail abaixo do botão.');
+        btn.disabled = false;
+        btn.textContent = 'Enviar mensagem';
+      });
+    }catch(err){
+      console.warn('Falha ao enviar mensagem de contato:', err);
+      alert('Não foi possível enviar agora. Tente de novo em alguns instantes, ou use o link de e-mail abaixo do botão.');
+      btn.disabled = false;
+      btn.textContent = 'Enviar mensagem';
+    }
+  });
 }
 
 function updateActiveProfileLabel(){
@@ -3732,6 +3824,7 @@ function init(){
   setupCotacoes();
   setupCarteira();
   setupAuth();
+  setupContato();
   injectChartStyleButtons();
   showAuthOverlay();
 }
